@@ -1,0 +1,39 @@
+pipeline {
+  agent any
+  stages {
+    // stage("Application Build"){
+    //     steps {
+    //         script {
+    //                 sh """
+    //                 #!/bin/bash
+    //                 sudo ssh -i yourprivatekey.pem @serverip << EOF
+    //                 sudo bash /opt/filename.sh
+    //                 exit 0
+    //                 << EOF
+    //                 """
+    //             }
+    //     }
+    // }
+    stage('Application Build') {
+      steps {
+        sshagent(['remote-server-info']) {
+        sh 'scp -o "StrictHostKeyChecking=no" build_deploy.sh ubuntu@54.193.175.143:/home/ubuntu'
+        sh 'sudo chmod +x build_deploy.sh'
+        sh 'bash build_deploy.sh'
+        }
+      }
+    }
+    stage('Push Artifact to S3') {
+      steps {
+        sh 'aws s3 cp webapp/target/webapp.war s3://demos3nc'
+      }
+    }
+}
+// post {
+//      always {
+//        emailext to: 'lprudra9@gmail.com',
+//        attachLog: true, body: "Dear team pipeline is ${currentBuild.result} please check ${BUILD_URL} or PFA build log", compressLog: false,
+//        subject: "Jenkins Build Notification: ${JOB_NAME}-Build# ${BUILD_NUMBER} ${currentBuild.result}"
+//     }
+// }
+}
