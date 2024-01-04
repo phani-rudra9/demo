@@ -17,7 +17,7 @@ pipeline {
     stage('Application Build') {
       steps {
         sshagent(['remote-server-info']) {
-        sh 'scp -o "StrictHostKeyChecking=no" build_deploy.sh ubuntu@18.117.85.70:/home/ubuntu'
+        sh 'scp -o "StrictHostKeyChecking=no" build_deploy.sh ubuntu@54.193.175.143:/home/ubuntu'
         sh 'sudo chmod +x build_deploy.sh'
         sh 'bash build_deploy.sh'
         }
